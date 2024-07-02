@@ -59,6 +59,17 @@ from .ct_postprocess import CTPostProcess
 from .drrg_postprocess import DRRGPostprocess
 from .rec_postprocess import CANLabelDecode
 
+"""
+postprocess_params["name"] = "DBPostProcess"
+postprocess_params["thresh"] = args.det_db_thresh
+postprocess_params["box_thresh"] = args.det_db_box_thresh
+postprocess_params["max_candidates"] = 1000
+postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
+postprocess_params["use_dilation"] = args.use_dilation
+postprocess_params["score_mode"] = args.det_db_score_mode
+postprocess_params["box_type"] = args.det_box_type
+"""
+
 
 def build_post_process(config, global_config=None):
     support_dict = [
@@ -98,19 +109,19 @@ def build_post_process(config, global_config=None):
         "CPPDLabelDecode",
     ]
 
-    if config["name"] == "PSEPostProcess":
-        from .pse_postprocess import PSEPostProcess
+    # if config["name"] == "PSEPostProcess":
+    #     from .pse_postprocess import PSEPostProcess
 
-        support_dict.append("PSEPostProcess")
+    #     support_dict.append("PSEPostProcess")
 
     config = copy.deepcopy(config)
     module_name = config.pop("name")
-    if module_name == "None":
-        return
-    if global_config is not None:
-        config.update(global_config)
-    assert module_name in support_dict, Exception(
-        "post process only support {}".format(support_dict)
-    )
+    # if module_name == "None":
+    #     return
+    # if global_config is not None:
+    #     config.update(global_config)
+    # assert module_name in support_dict, Exception(
+    #     "post process only support {}".format(support_dict)
+    # )
     module_class = eval(module_name)(**config)
     return module_class

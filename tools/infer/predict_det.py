@@ -59,75 +59,75 @@ class TextDetector(object):
             {"KeepKeys": {"keep_keys": ["image", "shape"]}},
         ]
         postprocess_params = {}
-        if self.det_algorithm == "DB":
-            postprocess_params["name"] = "DBPostProcess"
-            postprocess_params["thresh"] = args.det_db_thresh
-            postprocess_params["box_thresh"] = args.det_db_box_thresh
-            postprocess_params["max_candidates"] = 1000
-            postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
-            postprocess_params["use_dilation"] = args.use_dilation
-            postprocess_params["score_mode"] = args.det_db_score_mode
-            postprocess_params["box_type"] = args.det_box_type
-        elif self.det_algorithm == "DB++":
-            postprocess_params["name"] = "DBPostProcess"
-            postprocess_params["thresh"] = args.det_db_thresh
-            postprocess_params["box_thresh"] = args.det_db_box_thresh
-            postprocess_params["max_candidates"] = 1000
-            postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
-            postprocess_params["use_dilation"] = args.use_dilation
-            postprocess_params["score_mode"] = args.det_db_score_mode
-            postprocess_params["box_type"] = args.det_box_type
-            pre_process_list[1] = {
-                "NormalizeImage": {
-                    "std": [1.0, 1.0, 1.0],
-                    "mean": [0.48109378172549, 0.45752457890196, 0.40787054090196],
-                    "scale": "1./255.",
-                    "order": "hwc",
-                }
-            }
-        elif self.det_algorithm == "EAST":
-            postprocess_params["name"] = "EASTPostProcess"
-            postprocess_params["score_thresh"] = args.det_east_score_thresh
-            postprocess_params["cover_thresh"] = args.det_east_cover_thresh
-            postprocess_params["nms_thresh"] = args.det_east_nms_thresh
-        elif self.det_algorithm == "SAST":
-            pre_process_list[0] = {
-                "DetResizeForTest": {"resize_long": args.det_limit_side_len}
-            }
-            postprocess_params["name"] = "SASTPostProcess"
-            postprocess_params["score_thresh"] = args.det_sast_score_thresh
-            postprocess_params["nms_thresh"] = args.det_sast_nms_thresh
+        # if self.det_algorithm == "DB":
+        postprocess_params["name"] = "DBPostProcess"
+        postprocess_params["thresh"] = args.det_db_thresh
+        postprocess_params["box_thresh"] = args.det_db_box_thresh
+        postprocess_params["max_candidates"] = 1000
+        postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
+        postprocess_params["use_dilation"] = args.use_dilation
+        postprocess_params["score_mode"] = args.det_db_score_mode
+        postprocess_params["box_type"] = args.det_box_type
+        # elif self.det_algorithm == "DB++":
+        #     postprocess_params["name"] = "DBPostProcess"
+        #     postprocess_params["thresh"] = args.det_db_thresh
+        #     postprocess_params["box_thresh"] = args.det_db_box_thresh
+        #     postprocess_params["max_candidates"] = 1000
+        #     postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
+        #     postprocess_params["use_dilation"] = args.use_dilation
+        #     postprocess_params["score_mode"] = args.det_db_score_mode
+        #     postprocess_params["box_type"] = args.det_box_type
+        #     pre_process_list[1] = {
+        #         "NormalizeImage": {
+        #             "std": [1.0, 1.0, 1.0],
+        #             "mean": [0.48109378172549, 0.45752457890196, 0.40787054090196],
+        #             "scale": "1./255.",
+        #             "order": "hwc",
+        #         }
+        #     }
+        # elif self.det_algorithm == "EAST":
+        #     postprocess_params["name"] = "EASTPostProcess"
+        #     postprocess_params["score_thresh"] = args.det_east_score_thresh
+        #     postprocess_params["cover_thresh"] = args.det_east_cover_thresh
+        #     postprocess_params["nms_thresh"] = args.det_east_nms_thresh
+        # elif self.det_algorithm == "SAST":
+        #     pre_process_list[0] = {
+        #         "DetResizeForTest": {"resize_long": args.det_limit_side_len}
+        #     }
+        #     postprocess_params["name"] = "SASTPostProcess"
+        #     postprocess_params["score_thresh"] = args.det_sast_score_thresh
+        #     postprocess_params["nms_thresh"] = args.det_sast_nms_thresh
 
-            if args.det_box_type == "poly":
-                postprocess_params["sample_pts_num"] = 6
-                postprocess_params["expand_scale"] = 1.2
-                postprocess_params["shrink_ratio_of_width"] = 0.2
-            else:
-                postprocess_params["sample_pts_num"] = 2
-                postprocess_params["expand_scale"] = 1.0
-                postprocess_params["shrink_ratio_of_width"] = 0.3
+        #     if args.det_box_type == "poly":
+        #         postprocess_params["sample_pts_num"] = 6
+        #         postprocess_params["expand_scale"] = 1.2
+        #         postprocess_params["shrink_ratio_of_width"] = 0.2
+        #     else:
+        #         postprocess_params["sample_pts_num"] = 2
+        #         postprocess_params["expand_scale"] = 1.0
+        #         postprocess_params["shrink_ratio_of_width"] = 0.3
 
-        elif self.det_algorithm == "PSE":
-            postprocess_params["name"] = "PSEPostProcess"
-            postprocess_params["thresh"] = args.det_pse_thresh
-            postprocess_params["box_thresh"] = args.det_pse_box_thresh
-            postprocess_params["min_area"] = args.det_pse_min_area
-            postprocess_params["box_type"] = args.det_box_type
-            postprocess_params["scale"] = args.det_pse_scale
-        elif self.det_algorithm == "FCE":
-            pre_process_list[0] = {"DetResizeForTest": {"rescale_img": [1080, 736]}}
-            postprocess_params["name"] = "FCEPostProcess"
-            postprocess_params["scales"] = args.scales
-            postprocess_params["alpha"] = args.alpha
-            postprocess_params["beta"] = args.beta
-            postprocess_params["fourier_degree"] = args.fourier_degree
-            postprocess_params["box_type"] = args.det_box_type
-        elif self.det_algorithm == "CT":
-            pre_process_list[0] = {"ScaleAlignedShort": {"short_size": 640}}
-            postprocess_params["name"] = "CTPostProcess"
-        else:
-            logger.info("unknown det_algorithm:{}".format(self.det_algorithm))
-            sys.exit(0)
+        # elif self.det_algorithm == "PSE":
+        #     postprocess_params["name"] = "PSEPostProcess"
+        #     postprocess_params["thresh"] = args.det_pse_thresh
+        #     postprocess_params["box_thresh"] = args.det_pse_box_thresh
+        #     postprocess_params["min_area"] = args.det_pse_min_area
+        #     postprocess_params["box_type"] = args.det_box_type
+        #     postprocess_params["scale"] = args.det_pse_scale
+        # elif self.det_algorithm == "FCE":
+        #     pre_process_list[0] = {"DetResizeForTest": {"rescale_img": [1080, 736]}}
+        #     postprocess_params["name"] = "FCEPostProcess"
+        #     postprocess_params["scales"] = args.scales
+        #     postprocess_params["alpha"] = args.alpha
+        #     postprocess_params["beta"] = args.beta
+        #     postprocess_params["fourier_degree"] = args.fourier_degree
+        #     postprocess_params["box_type"] = args.det_box_type
+        # elif self.det_algorithm == "CT":
+        #     pre_process_list[0] = {"ScaleAlignedShort": {"short_size": 640}}
+        #     postprocess_params["name"] = "CTPostProcess"
+        # else:
+        #     logger.info("unknown det_algorithm:{}".format(self.det_algorithm))
+        #     sys.exit(0)
 
         self.preprocess_op = create_operators(pre_process_list)
         self.postprocess_op = build_post_process(postprocess_params)
@@ -246,19 +246,20 @@ class TextDetector(object):
 
         if self.args.benchmark:
             self.autolog.times.stamp()
-        if self.use_onnx:
-            input_dict = {}
-            input_dict[self.input_tensor.name] = img
-            outputs = self.predictor.run(self.output_tensors, input_dict)
-        else:
-            self.input_tensor.copy_from_cpu(img)
-            self.predictor.run()
-            outputs = []
-            for output_tensor in self.output_tensors:
-                output = output_tensor.copy_to_cpu()
-                outputs.append(output)
-            if self.args.benchmark:
-                self.autolog.times.stamp()
+        # if self.use_onnx:
+        input_dict = {}
+        input_dict[self.input_tensor.name] = img
+        outputs = self.predictor.run(self.output_tensors, input_dict)
+        # print(outputs)
+        # else:
+        #     self.input_tensor.copy_from_cpu(img)
+        #     self.predictor.run()
+        #     outputs = []
+        #     for output_tensor in self.output_tensors:
+        #         output = output_tensor.copy_to_cpu()
+        #         outputs.append(output)
+        #     if self.args.benchmark:
+        #         self.autolog.times.stamp()
 
         preds = {}
         if self.det_algorithm == "EAST":
@@ -281,6 +282,7 @@ class TextDetector(object):
             raise NotImplementedError
 
         post_result = self.postprocess_op(preds, shape_list)
+        # print(post_result)
         dt_boxes = post_result[0]["points"]
 
         if self.args.det_box_type == "poly":
@@ -291,7 +293,7 @@ class TextDetector(object):
         if self.args.benchmark:
             self.autolog.times.end(stamp=True)
         et = time.time()
-        return dt_boxes, et - st
+        return dt_boxes, et - st # det 结果 box
 
     def __call__(self, img):
         # For image like poster with one side much greater than the other side,
@@ -299,99 +301,99 @@ class TextDetector(object):
         MIN_BOUND_DISTANCE = 50
         dt_boxes = np.zeros((0, 4, 2), dtype=np.float32)
         elapse = 0
-        if (
-            img.shape[0] / img.shape[1] > 2
-            and img.shape[0] > self.args.det_limit_side_len
-        ):
-            start_h = 0
-            end_h = 0
-            while end_h <= img.shape[0]:
-                end_h = start_h + img.shape[1] * 3 // 4
-                subimg = img[start_h:end_h, :]
-                if len(subimg) == 0:
-                    break
-                sub_dt_boxes, sub_elapse = self.predict(subimg)
-                offset = start_h
-                # To prevent text blocks from being cut off, roll back a certain buffer area.
-                if (
-                    len(sub_dt_boxes) == 0
-                    or img.shape[1] - max([x[-1][1] for x in sub_dt_boxes])
-                    > MIN_BOUND_DISTANCE
-                ):
-                    start_h = end_h
-                else:
-                    sorted_indices = np.argsort(sub_dt_boxes[:, 2, 1])
-                    sub_dt_boxes = sub_dt_boxes[sorted_indices]
-                    bottom_line = (
-                        0
-                        if len(sub_dt_boxes) <= 1
-                        else int(np.max(sub_dt_boxes[:-1, 2, 1]))
-                    )
-                    if bottom_line > 0:
-                        start_h += bottom_line
-                        sub_dt_boxes = sub_dt_boxes[
-                            sub_dt_boxes[:, 2, 1] <= bottom_line
-                        ]
-                    else:
-                        start_h = end_h
-                if len(sub_dt_boxes) > 0:
-                    if dt_boxes.shape[0] == 0:
-                        dt_boxes = sub_dt_boxes + np.array(
-                            [0, offset], dtype=np.float32
-                        )
-                    else:
-                        dt_boxes = np.append(
-                            dt_boxes,
-                            sub_dt_boxes + np.array([0, offset], dtype=np.float32),
-                            axis=0,
-                        )
-                elapse += sub_elapse
-        elif (
-            img.shape[1] / img.shape[0] > 3
-            and img.shape[1] > self.args.det_limit_side_len * 3
-        ):
-            start_w = 0
-            end_w = 0
-            while end_w <= img.shape[1]:
-                end_w = start_w + img.shape[0] * 3 // 4
-                subimg = img[:, start_w:end_w]
-                if len(subimg) == 0:
-                    break
-                sub_dt_boxes, sub_elapse = self.predict(subimg)
-                offset = start_w
-                if (
-                    len(sub_dt_boxes) == 0
-                    or img.shape[0] - max([x[-1][0] for x in sub_dt_boxes])
-                    > MIN_BOUND_DISTANCE
-                ):
-                    start_w = end_w
-                else:
-                    sorted_indices = np.argsort(sub_dt_boxes[:, 2, 0])
-                    sub_dt_boxes = sub_dt_boxes[sorted_indices]
-                    right_line = (
-                        0
-                        if len(sub_dt_boxes) <= 1
-                        else int(np.max(sub_dt_boxes[:-1, 1, 0]))
-                    )
-                    if right_line > 0:
-                        start_w += right_line
-                        sub_dt_boxes = sub_dt_boxes[sub_dt_boxes[:, 1, 0] <= right_line]
-                    else:
-                        start_w = end_w
-                if len(sub_dt_boxes) > 0:
-                    if dt_boxes.shape[0] == 0:
-                        dt_boxes = sub_dt_boxes + np.array(
-                            [offset, 0], dtype=np.float32
-                        )
-                    else:
-                        dt_boxes = np.append(
-                            dt_boxes,
-                            sub_dt_boxes + np.array([offset, 0], dtype=np.float32),
-                            axis=0,
-                        )
-                elapse += sub_elapse
-        else:
-            dt_boxes, elapse = self.predict(img)
+        # if (
+        #     img.shape[0] / img.shape[1] > 2
+        #     and img.shape[0] > self.args.det_limit_side_len
+        # ):
+        #     start_h = 0
+        #     end_h = 0
+        #     while end_h <= img.shape[0]:
+        #         end_h = start_h + img.shape[1] * 3 // 4
+        #         subimg = img[start_h:end_h, :]
+        #         if len(subimg) == 0:
+        #             break
+        #         sub_dt_boxes, sub_elapse = self.predict(subimg)
+        #         offset = start_h
+        #         # To prevent text blocks from being cut off, roll back a certain buffer area.
+        #         if (
+        #             len(sub_dt_boxes) == 0
+        #             or img.shape[1] - max([x[-1][1] for x in sub_dt_boxes])
+        #             > MIN_BOUND_DISTANCE
+        #         ):
+        #             start_h = end_h
+        #         else:
+        #             sorted_indices = np.argsort(sub_dt_boxes[:, 2, 1])
+        #             sub_dt_boxes = sub_dt_boxes[sorted_indices]
+        #             bottom_line = (
+        #                 0
+        #                 if len(sub_dt_boxes) <= 1
+        #                 else int(np.max(sub_dt_boxes[:-1, 2, 1]))
+        #             )
+        #             if bottom_line > 0:
+        #                 start_h += bottom_line
+        #                 sub_dt_boxes = sub_dt_boxes[
+        #                     sub_dt_boxes[:, 2, 1] <= bottom_line
+        #                 ]
+        #             else:
+        #                 start_h = end_h
+        #         if len(sub_dt_boxes) > 0:
+        #             if dt_boxes.shape[0] == 0:
+        #                 dt_boxes = sub_dt_boxes + np.array(
+        #                     [0, offset], dtype=np.float32
+        #                 )
+        #             else:
+        #                 dt_boxes = np.append(
+        #                     dt_boxes,
+        #                     sub_dt_boxes + np.array([0, offset], dtype=np.float32),
+        #                     axis=0,
+        #                 )
+        #         elapse += sub_elapse
+        # elif (
+        #     img.shape[1] / img.shape[0] > 3
+        #     and img.shape[1] > self.args.det_limit_side_len * 3
+        # ):
+        #     start_w = 0
+        #     end_w = 0
+        #     while end_w <= img.shape[1]:
+        #         end_w = start_w + img.shape[0] * 3 // 4
+        #         subimg = img[:, start_w:end_w]
+        #         if len(subimg) == 0:
+        #             break
+        #         sub_dt_boxes, sub_elapse = self.predict(subimg)
+        #         offset = start_w
+        #         if (
+        #             len(sub_dt_boxes) == 0
+        #             or img.shape[0] - max([x[-1][0] for x in sub_dt_boxes])
+        #             > MIN_BOUND_DISTANCE
+        #         ):
+        #             start_w = end_w
+        #         else:
+        #             sorted_indices = np.argsort(sub_dt_boxes[:, 2, 0])
+        #             sub_dt_boxes = sub_dt_boxes[sorted_indices]
+        #             right_line = (
+        #                 0
+        #                 if len(sub_dt_boxes) <= 1
+        #                 else int(np.max(sub_dt_boxes[:-1, 1, 0]))
+        #             )
+        #             if right_line > 0:
+        #                 start_w += right_line
+        #                 sub_dt_boxes = sub_dt_boxes[sub_dt_boxes[:, 1, 0] <= right_line]
+        #             else:
+        #                 start_w = end_w
+        #         if len(sub_dt_boxes) > 0:
+        #             if dt_boxes.shape[0] == 0:
+        #                 dt_boxes = sub_dt_boxes + np.array(
+        #                     [offset, 0], dtype=np.float32
+        #                 )
+        #             else:
+        #                 dt_boxes = np.append(
+        #                     dt_boxes,
+        #                     sub_dt_boxes + np.array([offset, 0], dtype=np.float32),
+        #                     axis=0,
+        #                 )
+        #         elapse += sub_elapse
+        # else:
+        dt_boxes, elapse = self.predict(img)
         return dt_boxes, elapse
 
 

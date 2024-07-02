@@ -74,6 +74,7 @@ class TextSystem(object):
         self.crop_image_res_index += bbox_num
 
     def __call__(self, img, cls=True, slice={}):
+        # print(slice)
         time_dict = {"det": 0, "rec": 0, "cls": 0, "all": 0}
 
         if img is None:
@@ -82,31 +83,31 @@ class TextSystem(object):
 
         start = time.time()
         ori_im = img.copy()
-        if slice:
-            slice_gen = slice_generator(
-                img,
-                horizontal_stride=slice["horizontal_stride"],
-                vertical_stride=slice["vertical_stride"],
-            )
-            elapsed = []
-            dt_slice_boxes = []
-            for slice_crop, v_start, h_start in slice_gen:
-                dt_boxes, elapse = self.text_detector(slice_crop)
-                if dt_boxes.size:
-                    dt_boxes[:, :, 0] += h_start
-                    dt_boxes[:, :, 1] += v_start
-                    dt_slice_boxes.append(dt_boxes)
-                    elapsed.append(elapse)
-            dt_boxes = np.concatenate(dt_slice_boxes)
+        # if slice:
+        #     slice_gen = slice_generator(
+        #         img,
+        #         horizontal_stride=slice["horizontal_stride"],
+        #         vertical_stride=slice["vertical_stride"],
+        #     )
+        #     elapsed = []
+        #     dt_slice_boxes = []
+        #     for slice_crop, v_start, h_start in slice_gen:
+        #         dt_boxes, elapse = self.text_detector(slice_crop)
+        #         if dt_boxes.size:
+        #             dt_boxes[:, :, 0] += h_start
+        #             dt_boxes[:, :, 1] += v_start
+        #             dt_slice_boxes.append(dt_boxes)
+        #             elapsed.append(elapse)
+        #     dt_boxes = np.concatenate(dt_slice_boxes)
 
-            dt_boxes = merge_fragmented(
-                boxes=dt_boxes,
-                x_threshold=slice["merge_x_thres"],
-                y_threshold=slice["merge_y_thres"],
-            )
-            elapse = sum(elapsed)
-        else:
-            dt_boxes, elapse = self.text_detector(img)
+        #     dt_boxes = merge_fragmented(
+        #         boxes=dt_boxes,
+        #         x_threshold=slice["merge_x_thres"],
+        #         y_threshold=slice["merge_y_thres"],
+        #     )
+        #     elapse = sum(elapsed)
+        # else:
+        dt_boxes, elapse = self.text_detector(img) # ! det
 
         time_dict["det"] = elapse
 
@@ -122,13 +123,14 @@ class TextSystem(object):
         img_crop_list = []
 
         dt_boxes = sorted_boxes(dt_boxes)
+        # print(dt_boxes)
 
         for bno in range(len(dt_boxes)):
             tmp_box = copy.deepcopy(dt_boxes[bno])
             if self.args.det_box_type == "quad":
-                img_crop = get_rotate_crop_image(ori_im, tmp_box)
+                img_crop = get_rotate_crop_image(ori_im, tmp_box) # !!!
             else:
-                img_crop = get_minarea_rect_crop(ori_im, tmp_box)
+                img_crop = get_minarea_rect_crop(ori_im, tmp_box) # !!!
             img_crop_list.append(img_crop)
         if self.use_angle_cls and cls:
             img_crop_list, angle_list, elapse = self.text_classifier(img_crop_list)
@@ -141,7 +143,7 @@ class TextSystem(object):
                 f"rec crops num: {len(img_crop_list)}, time and memory cost may be large."
             )
 
-        rec_res, elapse = self.text_recognizer(img_crop_list)
+        rec_res, elapse = self.text_recognizer(img_crop_list) # ! rec
         time_dict["rec"] = elapse
         logger.debug("rec_res num  : {}, elapsed : {}".format(len(rec_res), elapse))
         if self.args.save_crop_res:
@@ -224,7 +226,9 @@ def main(args):
             imgs = img[:page_num]
         for index, img in enumerate(imgs):
             starttime = time.time()
-            dt_boxes, rec_res, time_dict = text_sys(img)
+            # print("?")
+            dt_boxes, rec_res, time_dict = text_sys(img) # box + rec
+            # print("131232321321313: ", dt_boxes, rec_res)
             elapse = time.time() - starttime
             total_time += elapse
             if len(imgs) > 1:
@@ -309,18 +313,19 @@ def main(args):
 
 if __name__ == "__main__":
     args = utility.parse_args()
-    if args.use_mp:
-        p_list = []
-        total_process_num = args.total_process_num
-        for process_id in range(total_process_num):
-            cmd = (
-                [sys.executable, "-u"]
-                + sys.argv
-                + ["--process_id={}".format(process_id), "--use_mp={}".format(False)]
-            )
-            p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stdout)
-            p_list.append(p)
-        for p in p_list:
-            p.wait()
-    else:
-        main(args)
+    print(args)
+    # if args.use_mp:
+    #     p_list = []
+    #     total_process_num = args.total_process_num
+    #     for process_id in range(total_process_num):
+    #         cmd = (
+    #             [sys.executable, "-u"]
+    #             + sys.argv
+    #             + ["--process_id={}".format(process_id), "--use_mp={}".format(False)]
+    #         )
+    #         p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stdout)
+    #         p_list.append(p)
+    #     for p in p_list:
+    #         p.wait()
+    # else:
+    main(args)

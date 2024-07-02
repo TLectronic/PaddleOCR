@@ -25,7 +25,7 @@ import paddle
 from shapely.geometry import Polygon
 import pyclipper
 
-
+# !!! convert bitmap to box
 class DBPostProcess(object):
     """
     The post process for Differentiable Binarization (DB).

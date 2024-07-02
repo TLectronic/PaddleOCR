@@ -189,7 +189,7 @@ class BaseRecLabelDecode(object):
     def get_ignored_tokens(self):
         return [0]  # for ctc blank
 
-
+# !!!!!!!!!!!!!!!!!!!!!!!
 class CTCLabelDecode(BaseRecLabelDecode):
     """Convert between text-label and text-index"""
 
