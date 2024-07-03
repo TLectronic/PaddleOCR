@@ -189,7 +189,7 @@ class BaseRecLabelDecode(object):
     def get_ignored_tokens(self):
         return [0]  # for ctc blank
 
-# !!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!! 将模型的预测输出转换为文本字符串
 class CTCLabelDecode(BaseRecLabelDecode):
     """Convert between text-label and text-index"""
 

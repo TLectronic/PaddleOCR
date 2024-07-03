@@ -56,6 +56,7 @@ class DBPostProcess(object):
 
         self.dilation_kernel = None if not use_dilation else np.array([[1, 1], [1, 1]])
 
+    # !!!!从二值化后的图像中提取多边形或四边形的边界框
     def polygons_from_bitmap(self, pred, _bitmap, dest_width, dest_height):
         """
         _bitmap: single map with shape (1, H, W),
